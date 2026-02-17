@@ -1,6 +1,6 @@
 {
   "name": "searxng-mcp",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "MCP server for connecting agentic systems to search systems via searXNG - Node.js implementation",
   "type": "module",
   "main": "dist/index.js",
@@ -29,6 +29,9 @@
     "search",
     "mcp-server"
   ],
-  "author": "",
-  "license": "MIT"
+  "author": "Chris Bunting",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ]
 }
