@@ -4,8 +4,18 @@ An MCP server for connecting agentic systems to search systems via [searXNG](htt
 
 ## Tools
 
-- `search` - Search the web using SearXNG metasearch engine
-- `web_fetch` - Fetch and extract content from a URL
+- `search` - Search the web using SearXNG metasearch engine. Aggregates results from multiple search engines (Google, Bing, DuckDuckGo, Brave, etc.). Supports advanced search syntax, category filtering, time ranges, and language preferences.
+- `web_fetch` - Fetch and extract text content from a URL using intelligent HTML parsing.
+- `web_crawl` - Crawl a website starting from a URL, recursively following links to extract content from multiple pages. Configurable depth, page limit, and domain restriction.
+
+### web_crawl Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `url` | string | *required* | Starting URL to crawl from |
+| `max_depth` | number | 2 | Maximum link depth to follow (max: 5) |
+| `max_pages` | number | 10 | Maximum number of pages to crawl (max: 50) |
+| `same_domain` | boolean | true | Only crawl pages on the same domain |
 
 ## Usage
 
@@ -46,3 +56,7 @@ npm install
 npm run build
 npm start
 ```
+
+---
+
+Created by Chris Bunting

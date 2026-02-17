@@ -1,4 +1,4 @@
-import { search, fetchUrl, SearchParams } from "./search.js";
+import { search, fetchUrl, crawlUrl, SearchParams, CrawlParams } from "./search.js";
 import { Tool } from "@modelcontextprotocol/sdk/types.js";
 
 interface TextContent {
@@ -71,15 +71,57 @@ using intelligent parsing. Useful for getting detailed information from specific
         required: ["url"],
       },
     },
+    {
+      name: "web_crawl",
+      description: `Crawl a website starting from a URL, recursively following links to extract content from multiple pages. 
+Useful for gathering comprehensive information from a website, documentation sites, or exploring site structure.`,
+      inputSchema: {
+        type: "object",
+        properties: {
+          url: {
+            type: "string",
+            description: "The starting URL to crawl from",
+          },
+          max_depth: {
+            type: "number",
+            description: "Maximum link depth to follow (default: 2, max: 5)",
+            default: 2,
+          },
+          max_pages: {
+            type: "number",
+            description: "Maximum number of pages to crawl (default: 10, max: 50)",
+            default: 10,
+          },
+          same_domain: {
+            type: "boolean",
+            description: "Only crawl pages on the same domain as the start URL (default: true)",
+            default: true,
+          },
+        },
+        required: ["url"],
+      },
+    },
   ];
 
   return { tools };
 }
 
 export async function searchTool(
-  args: SearchParams | { url: string }
+  args: SearchParams | { url: string } | CrawlParams
 ): Promise<{ content: TextContent[]; isError?: boolean }> {
   try {
+    if ("max_depth" in args || ("url" in args && "same_domain" in args)) {
+      const crawlArgs = args as CrawlParams;
+      const clampedDepth = Math.min(crawlArgs.max_depth ?? 2, 5);
+      const clampedPages = Math.min(crawlArgs.max_pages ?? 10, 50);
+      const result = await crawlUrl({
+        ...crawlArgs,
+        max_depth: clampedDepth,
+        max_pages: clampedPages,
+      });
+      return { content: [{ type: "text", text: result }] };
+    }
+
     if ("url" in args) {
       const result = await fetchUrl(args.url);
       return { content: [{ type: "text", text: result }] };

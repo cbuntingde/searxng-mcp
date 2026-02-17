@@ -146,6 +146,149 @@ export async function search(params: SearchParams): Promise<string> {
   }
 }
 
+export interface CrawlParams {
+  url: string;
+  max_depth?: number;
+  max_pages?: number;
+  same_domain?: boolean;
+}
+
+export interface CrawlResult {
+  pages_crawled: number;
+  pages: { url: string; title: string; content: string; depth: number; links: string[] }[];
+}
+
+export async function crawlUrl(params: CrawlParams): Promise<string> {
+  const {
+    url: startUrl,
+    max_depth = 2,
+    max_pages = 10,
+    same_domain = true,
+  } = params;
+
+  const visited = new Set<string>();
+  const results: CrawlResult["pages"] = [];
+  const queue: { url: string; depth: number }[] = [{ url: startUrl, depth: 0 }];
+
+  let startHostname: string;
+  try {
+    startHostname = new URL(startUrl).hostname;
+  } catch {
+    throw new Error(`Invalid start URL: ${startUrl}`);
+  }
+
+  while (queue.length > 0 && results.length < max_pages) {
+    const item = queue.shift();
+    if (!item) break;
+
+    const { url: currentUrl, depth } = item;
+
+    let normalizedUrl: string;
+    try {
+      const parsed = new URL(currentUrl);
+      parsed.hash = "";
+      normalizedUrl = parsed.toString();
+    } catch {
+      continue;
+    }
+
+    if (visited.has(normalizedUrl)) continue;
+    visited.add(normalizedUrl);
+
+    if (same_domain) {
+      try {
+        if (new URL(normalizedUrl).hostname !== startHostname) continue;
+      } catch {
+        continue;
+      }
+    }
+
+    try {
+      const response = await axios.get<string>(normalizedUrl, {
+        timeout: 15000,
+        headers: {
+          "User-Agent": "Mozilla/5.0 (compatible; MCP-SearXNG/0.2.0)",
+        },
+        maxRedirects: 3,
+      });
+
+      const contentType = response.headers["content-type"] || "";
+      if (!contentType.includes("text/html") && !contentType.includes("text/plain")) {
+        continue;
+      }
+
+      const $ = cheerio.load(response.data);
+      $("script, style, nav, header, footer, aside, noscript").remove();
+
+      const title = $("title").text().trim() || $("h1").first().text().trim() || "";
+
+      const mainContent = $("main, article, .content, .post, .entry").first();
+      const rawContent = mainContent.length > 0 ? mainContent.text() : $("body").text();
+
+      const cleaned = rawContent
+        .replace(/\s+/g, " ")
+        .replace(/[\n\r]+/g, "\n")
+        .trim()
+        .split("\n")
+        .filter((line: string) => line.trim().length > 0)
+        .join("\n")
+        .substring(0, 5000);
+
+      const links: string[] = [];
+      if (depth < max_depth) {
+        $("a[href]").each((_: number, el: any) => {
+          try {
+            const href = $(el).attr("href");
+            if (!href) return;
+            const resolved = new URL(href, normalizedUrl).toString();
+            const resolvedParsed = new URL(resolved);
+            if (resolvedParsed.protocol === "http:" || resolvedParsed.protocol === "https:") {
+              resolvedParsed.hash = "";
+              const resolvedClean = resolvedParsed.toString();
+              if (!visited.has(resolvedClean)) {
+                links.push(resolvedClean);
+              }
+            }
+          } catch {
+            // skip invalid URLs
+          }
+        });
+      }
+
+      results.push({ url: normalizedUrl, title, content: cleaned, depth, links });
+
+      if (depth < max_depth) {
+        for (const link of links) {
+          if (!visited.has(link) && results.length + queue.length < max_pages * 2) {
+            queue.push({ url: link, depth: depth + 1 });
+          }
+        }
+      }
+    } catch {
+      // skip pages that fail to load
+    }
+  }
+
+  let text = `=== Web Crawl Results ===\n`;
+  text += `Start URL: ${startUrl}\n`;
+  text += `Pages crawled: ${results.length}\n`;
+  text += `Max depth: ${max_depth}\n\n`;
+
+  for (let i = 0; i < results.length; i++) {
+    const page = results[i];
+    text += `--- Page ${i + 1} (depth: ${page.depth}) ---\n`;
+    text += `URL: ${page.url}\n`;
+    if (page.title) text += `Title: ${page.title}\n`;
+    text += `Content:\n${page.content}\n`;
+    if (page.links.length > 0) {
+      text += `Links found: ${page.links.length}\n`;
+    }
+    text += "\n";
+  }
+
+  return text;
+}
+
 export async function fetchUrl(url: string): Promise<string> {
   try {
     const response = await axios.get<string>(url, {

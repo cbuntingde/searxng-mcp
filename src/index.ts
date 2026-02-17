@@ -32,6 +32,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     if (name === "web_fetch") {
       return await searchTool(args as { url: string });
     }
+    if (name === "web_crawl") {
+      return await searchTool(args as { url: string; max_depth?: number; max_pages?: number; same_domain?: boolean });
+    }
     throw new Error(`Unknown tool: ${name}`);
   } catch (error) {
     return {
