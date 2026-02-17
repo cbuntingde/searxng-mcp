@@ -92,6 +92,9 @@ Add to `opencode.json`:
       "command": ["npx", "-y", "@gsxrchris/searxng-mcp@latest"],
       "enabled": true
     }
+  },
+  "env": {
+    "SEARXNG_URL": "http://localhost:8888"
   }
 }
 ```
