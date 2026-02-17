@@ -44,7 +44,10 @@ Add to `~/.claude/settings.json`:
   "mcpServers": {
     "searxng": {
       "command": "npx",
-      "args": ["-y", "@gsxrchris/searxng-mcp"]
+      "args": ["-y", "@gsxrchris/searxng-mcp"],
+      "env": {
+        "SEARXNG_URL": "http://localhost:8888"
+      }
     }
   }
 }
@@ -59,7 +62,10 @@ Add to `.vscode/mcp.json`:
   "servers": {
     "searxng": {
       "command": "npx",
-      "args": ["-y", "@gsxrchris/searxng-mcp"]
+      "args": ["-y", "@gsxrchris/searxng-mcp"],
+      "env": {
+        "SEARXNG_URL": "http://localhost:8888"
+      }
     }
   }
 }
@@ -74,7 +80,10 @@ Add to `~/.cursor/mcp.json`:
   "servers": {
     "searxng": {
       "command": "npx",
-      "args": ["-y", "@gsxrchris/searxng-mcp"]
+      "args": ["-y", "@gsxrchris/searxng-mcp"],
+      "env": {
+        "SEARXNG_URL": "http://localhost:8888"
+      }
     }
   }
 }
