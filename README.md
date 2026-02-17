@@ -22,7 +22,7 @@ An MCP server for connecting AI assistants to [SearXNG](https://docs.searxng.org
 ## Quick Start
 
 ```bash
-npx -y @gsxrchris/searxng-mcp
+npx -y @gsxrchris/searxng-mcp@latest
 ```
 
 Or install globally:
@@ -89,7 +89,7 @@ Add to `opencode.json`:
   "mcp": {
     "searxng": {
       "type": "local",
-      "command": ["npx", "-y", "@gsxrchris/searxng-mcp"],
+      "command": ["npx", "-y", "@gsxrchris/searxng-mcp@latest"],
       "enabled": true
     }
   }
