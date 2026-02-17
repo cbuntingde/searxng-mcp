@@ -75,6 +75,81 @@ The command path depends on your setup. You may need to use the full path or add
 
 Set the environment variable `SEARXNG_URL` to your SearXNG instance (default: `http://localhost:8080`)
 
+## OpenCode Configuration
+
+Add this to your `opencode.json`:
+
+```json
+{
+  "mcp": {
+    "searxng": {
+      "type": "local",
+      "command": ["npx", "-y", "@gsxrchris/searxng-mcp"],
+      "environment": {
+        "SEARXNG_URL": "http://localhost:8888"
+      },
+      "enabled": true
+    }
+  }
+}
+```
+
+## Editor Configuration
+
+### Claude Code
+
+Add to `~/.claude/settings.json`:
+
+```json
+{
+  "mcpServers": {
+    "searxng": {
+      "command": "npx",
+      "args": ["-y", "@gsxrchris/searxng-mcp"],
+      "env": {
+        "SEARXNG_URL": "http://localhost:8888"
+      }
+    }
+  }
+}
+```
+
+### VS Code
+
+Add to `.vscode/mcp.json` in your workspace:
+
+```json
+{
+  "servers": {
+    "searxng": {
+      "command": "npx",
+      "args": ["-y", "@gsxrchris/searxng-mcp"],
+      "env": {
+        "SEARXNG_URL": "http://localhost:8888"
+      }
+    }
+  }
+}
+```
+
+### Cursor
+
+Add to `~/.cursor/mcp.json` or workspace `.cursor/mcp.json`:
+
+```json
+{
+  "servers": {
+    "searxng": {
+      "command": "npx",
+      "args": ["-y", "@gsxrchris/searxng-mcp"],
+      "env": {
+        "SEARXNG_URL": "http://localhost:8888"
+      }
+    }
+  }
+}
+```
+
 ## Development
 
 ```bash
