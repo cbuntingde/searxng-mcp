@@ -1,6 +1,20 @@
-# searxng-mcp
+# @gsxrchris/searxng-mcp
+
+[![npm](https://img.shields.io/npm/v/@gsxrchris/searxng-mcp)](https://www.npmjs.com/package/@gsxrchris/searxng-mcp)
 
 An MCP server for connecting agentic systems to search systems via [searXNG](https://docs.searxng.org/) - Node.js implementation.
+
+## Installation
+
+```bash
+npm install @gsxrchris/searxng-mcp
+```
+
+Or via npx (no installation required):
+
+```bash
+npx -y @gsxrchris/searxng-mcp
+```
 
 ## Tools
 
@@ -26,24 +40,36 @@ An MCP server for connecting agentic systems to search systems via [searXNG](htt
   "mcpServers": {
     "searxng": {
       "command": "npx",
-      "args": ["-y", "searxng-mcp"]
+      "args": ["-y", "@gsxrchris/searxng-mcp"]
     }
   }
 }
 ```
 
-### via npm
+### via npm (global install)
+
+```bash
+npm install -g @gsxrchris/searxng-mcp
+```
 
 ```json
 {
   "mcpServers": {
     "searxng": {
-      "command": "node",
-      "args": ["/path/to/searxng-mcp/dist/index.js"]
+      "command": "searxng-mcp"
     }
   }
 }
 ```
+
+### via npm (local install)
+
+After installing locally in your project:
+```bash
+npm install @gsxrchris/searxng-mcp
+```
+
+The command path depends on your setup. You may need to use the full path or add node_modules/.bin to your PATH.
 
 ### Custom SearXNG URL
 
